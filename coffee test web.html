@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>나는 어떤 원두일까? ☕</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #F5ECD7;
+  --latte: #C8A97E;
+  --espresso: #2C1A0E;
+  --roast: #6B3A2A;
+  --milk: #FAF4EB;
+  --fog: #E8DDD0;
+  --washed: #4a7c59;
+  --natural: #c4713f;
+  --anaerobic: #3a5070;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--cream);
+  color: var(--espresso);
+  min-height: 100vh;
+}
+
+/* ── SCREEN ── */
+#screen-intro,
+#screen-test,
+#screen-result {
+  display: none;
+  min-height: 100vh;
+}
+#screen-intro.active,
+#screen-test.active,
+#screen-result.active { display: flex; }
+
+/* ════════════
+   INTRO
+════════════ */
+#screen-intro {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  background:
+    radial-gradient(ellipse at 20% 80%, rgba(74,124,89,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(196,113,63,0.15) 0%, transparent 50%),
+    var(--cream);
+}
+
+.intro-icon {
+  font-size: 5rem;
+  margin-bottom: 1.2rem;
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.intro-series {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+  color: var(--latte);
+  margin-bottom: 0.6rem;
+  text-transform: uppercase;
+}
+
+.intro-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--espresso);
+  line-height: 1.3;
+  margin-bottom: 1.2rem;
+}
+
+.intro-divider {
+  width: 50px;
+  height: 2px;
+  background: var(--latte);
+  margin: 0 auto 1.2rem;
+}
+
+.intro-desc {
+  font-size: 0.88rem;
+  line-height: 1.9;
+  color: var(--roast);
+  max-width: 380px;
+  margin-bottom: 2.5rem;
+}
+
+.btn-start {
+  background: var(--espresso);
+  color: var(--cream);
+  border: none;
+  padding: 1rem 3rem;
+  border-radius: 50px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: all 0.25s;
+  box-shadow: 0 4px 20px rgba(44,26,14,0.25);
+}
+.btn-start:hover {
+  background: var(--roast);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(44,26,14,0.3);
+}
+
+/* ════════════
+   TEST
+════════════ */
+#screen-test {
+  flex-direction: column;
+  padding: 0;
+}
+
+.test-topbar {
+  position: sticky;
+  top: 0;
+  background: var(--espresso);
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 50;
+}
+
+.topbar-title {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  color: var(--latte);
+  font-size: 0.9rem;
+}
+
+.progress-wrap {
+  flex: 1;
+  max-width: 200px;
+  margin: 0 1.2rem;
+}
+.progress-track {
+  background: rgba(255,255,255,0.15);
+  height: 4px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--latte);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+  width: 0%;
+}
+.progress-label {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.5);
+  text-align: right;
+  margin-top: 3px;
+}
+
+.test-body {
+  flex: 1;
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 6rem;
+}
+
+/* Question card */
+.q-card {
+  background: var(--milk);
+  border-radius: 16px;
+  padding: 1.8rem;
+  margin-bottom: 1.2rem;
+  border-left: 4px solid transparent;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  position: relative;
+}
+.q-card.answered { border-left-color: var(--latte); }
+
+.q-number {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 0.75rem;
+  color: var(--latte);
+  letter-spacing: 0.15em;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+
+.q-text {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--espresso);
+  line-height: 1.5;
+  margin-bottom: 1.2rem;
+}
+
+.options { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.option-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid var(--fog);
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  width: 100%;
+}
+.option-btn:hover {
+  border-color: var(--latte);
+  background: #fdf7ef;
+}
+.option-btn.selected {
+  border-color: transparent;
+  background: var(--espresso);
+}
+.option-btn.selected .opt-dot { background: var(--latte) !important; color: white; }
+.option-btn.selected .opt-text { color: var(--cream); }
+
+.opt-dot {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+.dot-a { background: #d9edd6; color: var(--washed); }
+.dot-b { background: #f5ddd0; color: var(--natural); }
+.dot-c { background: #d3dde8; color: var(--anaerobic); }
+
+.opt-text {
+  font-size: 0.9rem;
+  color: var(--roast);
+  line-height: 1.5;
+  transition: color 0.2s;
+}
+
+/* Submit bar */
+.submit-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.2rem 1.5rem;
+  background: linear-gradient(to top, var(--cream) 70%, transparent);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+.submit-bar .btn-complete {
+  pointer-events: all;
+  background: var(--espresso);
+  color: var(--cream);
+  border: none;
+  padding: 1rem 3rem;
+  border-radius: 50px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s;
+  box-shadow: 0 4px 20px rgba(44,26,14,0.3);
+  opacity: 0.4;
+  letter-spacing: 0.05em;
+}
+.submit-bar .btn-complete.ready {
+  opacity: 1;
+  background: var(--roast);
+}
+.submit-bar .btn-complete.ready:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(44,26,14,0.35);
+}
+.submit-hint {
+  pointer-events: none;
+  font-size: 0.75rem;
+  color: var(--roast);
+  opacity: 0.7;
+}
+
+/* ════════════
+   RESULT
+════════════ */
+#screen-result {
+  flex-direction: column;
+  align-items: center;
+  padding: 0 0 5rem;
+}
+
+.result-hero {
+  width: 100%;
+  padding: 4rem 2rem 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.result-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.12;
+  background: radial-gradient(circle at 50% 0%, white 0%, transparent 70%);
+}
+
+.result-type-badge {
+  display: inline-block;
+  border: 1px solid rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.85);
+  padding: 0.3rem 1.2rem;
+  border-radius: 20px;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 1.2rem;
+}
+
+.result-emoji {
+  font-size: 4rem;
+  margin-bottom: 0.6rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+.result-name-kr {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.3rem;
+}
+.result-name-en {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 1rem;
+  color: rgba(255,255,255,0.75);
+  margin-bottom: 1.5rem;
+}
+
+.result-traits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1.8rem;
+}
+.result-trait {
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.35);
+  color: white;
+  padding: 0.3rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+}
+
+.result-verse-box {
+  background: rgba(0,0,0,0.2);
+  border-radius: 12px;
+  padding: 1.2rem 1.5rem;
+  max-width: 400px;
+  font-size: 0.85rem;
+  color: white;
+  line-height: 1.8;
+}
+.result-verse-ref {
+  display: block;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 0.75rem;
+  opacity: 0.75;
+  margin-top: 0.4rem;
+}
+
+.result-body {
+  width: 100%;
+  max-width: 580px;
+  padding: 2rem 1.5rem;
+}
+
+.result-section {
+  background: var(--milk);
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+.result-section h3 {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--latte);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.8rem;
+}
+.result-section p {
+  font-size: 0.9rem;
+  line-height: 1.9;
+  color: var(--roast);
+}
+
+.result-section.special {
+  border-left: 4px solid var(--latte);
+}
+
+.score-row {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}
+.score-chip {
+  flex: 1;
+  text-align: center;
+  padding: 0.5rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+}
+.score-chip .sc-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  display: block;
+}
+
+.btn-retry {
+  display: block;
+  width: 100%;
+  max-width: 360px;
+  margin: 1.5rem auto 0;
+  text-align: center;
+  background: var(--espresso);
+  color: var(--cream);
+  border: none;
+  padding: 1rem;
+  border-radius: 50px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.btn-retry:hover {
+  background: var(--roast);
+  transform: translateY(-1px);
+}
+
+/* entrance animation */
+.fade-in {
+  animation: fadeUp 0.5s ease both;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+</style>
+</head>
+<body>
+
+<!-- ══════ INTRO ══════ -->
+<div id="screen-intro" class="active">
+  <div class="intro-icon">☕</div>
+  <p class="intro-series">Worship Coffee Series</p>
+  <h1 class="intro-title">나는 어떤 원두일까?</h1>
+  <div class="intro-divider"></div>
+  <p class="intro-desc">
+    10가지 질문에 솔직하게 답해보세요.<br>
+    당신만의 원두 성향과<br>
+    하나님이 주신 특별한 향기를 발견할 수 있어요 🌿
+  </p>
+  <button class="btn-start" onclick="startTest()">테스트 시작하기</button>
+</div>
+
+<!-- ══════ TEST ══════ -->
+<div id="screen-test">
+  <div class="test-topbar">
+    <span class="topbar-title">나는 어떤 원두일까?</span>
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="progress-label" id="progress-label">0 / 10</div>
+    </div>
+  </div>
+
+  <div class="test-body" id="test-body">
+    <!-- questions injected by JS -->
+  </div>
+
+  <div class="submit-bar">
+    <button class="btn-complete" id="btn-complete" onclick="showResult()">결과 확인하기 ✦</button>
+    <span class="submit-hint" id="submit-hint">모든 문항에 답하면 결과를 확인할 수 있어요</span>
+  </div>
+</div>
+
+<!-- ══════ RESULT ══════ -->
+<div id="screen-result">
+  <!-- injected -->
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    q: "새로운 사람들과 함께 있는 자리에서 나는",
+    opts: [
+      { label: "A", text: "분위기를 먼저 파악하며 천천히 적응한다", type: "A" },
+      { label: "B", text: "먼저 다가가 이야기를 나누는 편이다", type: "B" },
+      { label: "C", text: "사람들을 관찰하며 조용히 지켜본다", type: "C" },
+    ]
+  },
+  {
+    q: "친구가 고민을 털어놓을 때 나는",
+    opts: [
+      { label: "A", text: "현실적인 해결 방법을 함께 생각한다", type: "A" },
+      { label: "B", text: "먼저 공감하고 위로해 준다", type: "B" },
+      { label: "C", text: "고민의 근본적인 원인을 생각해 본다", type: "C" },
+    ]
+  },
+  {
+    q: "예배 시간에 가장 편안한 순간은",
+    opts: [
+      { label: "A", text: "말씀을 들으며 차분히 정리할 때", type: "A" },
+      { label: "B", text: "찬양하며 마음을 표현할 때", type: "B" },
+      { label: "C", text: "조용히 묵상하며 하나님과 대화할 때", type: "C" },
+    ]
+  },
+  {
+    q: "팀 프로젝트를 하게 된다면 나는",
+    opts: [
+      { label: "A", text: "계획을 세우고 진행 상황을 관리한다", type: "A" },
+      { label: "B", text: "분위기를 좋게 만들고 아이디어를 낸다", type: "B" },
+      { label: "C", text: "중요한 방향성과 의미를 고민한다", type: "C" },
+    ]
+  },
+  {
+    q: "친구들이 나를 가장 많이 표현하는 말은",
+    opts: [
+      { label: "A", text: "믿음직하다", type: "A" },
+      { label: "B", text: "밝고 활발하다", type: "B" },
+      { label: "C", text: "생각이 깊다", type: "C" },
+    ]
+  },
+  {
+    q: "하나님께 기도할 때 나는",
+    opts: [
+      { label: "A", text: "현재 상황을 정리하며 기도한다", type: "A" },
+      { label: "B", text: "느끼는 감정을 솔직하게 표현한다", type: "B" },
+      { label: "C", text: "마음속 깊은 생각을 천천히 묵상한다", type: "C" },
+    ]
+  },
+  {
+    q: "스트레스를 받을 때 나는",
+    opts: [
+      { label: "A", text: "해야 할 일을 하나씩 정리한다", type: "A" },
+      { label: "B", text: "사람들을 만나거나 이야기한다", type: "B" },
+      { label: "C", text: "혼자만의 시간을 가지며 생각한다", type: "C" },
+    ]
+  },
+  {
+    q: "내가 중요하게 생각하는 것은",
+    opts: [
+      { label: "A", text: "책임감과 신뢰", type: "A" },
+      { label: "B", text: "사랑과 관계", type: "B" },
+      { label: "C", text: "의미와 진정성", type: "C" },
+    ]
+  },
+  {
+    q: "하나님이 나에게 주신 강점은?",
+    opts: [
+      { label: "A", text: "꾸준함과 성실함", type: "A" },
+      { label: "B", text: "따뜻함과 열정", type: "B" },
+      { label: "C", text: "깊은 통찰력과 신중함", type: "C" },
+    ]
+  },
+  {
+    q: "다음 중 가장 마음이 끌리는 말씀은?",
+    opts: [
+      { label: "A", text: '"지극히 작은 것에 충성된 자는 큰 것에도 충성되고" (눅 16:10)', type: "A" },
+      { label: "B", text: '"항상 기뻐하라 쉬지 말고 기도하라 범사에 감사하라" (살전 5:16–18)', type: "B" },
+      { label: "C", text: '"사람은 외모를 보거니와 여호와는 중심을 보시느니라" (삼상 16:7)', type: "C" },
+    ]
+  },
+];
+
+const RESULTS = {
+  A: {
+    id: "washed",
+    name_kr: "워시드",
+    name_en: "Washed",
+    badge: "Single Origin · Washed",
+    emoji: "🌿",
+    gradient: "linear-gradient(155deg, #3d6e4a 0%, #1a3325 100%)",
+    traits: ["책임감", "성실함", "안정감", "믿음직함"],
+    short: "당신은 워시드 성향이에요.",
+    desc: "당신은 차분하고 안정적인 사람입니다. 눈에 띄는 것보다 맡은 역할을 묵묵히 감당하며 주변 사람들에게 신뢰와 편안함을 주는 경우가 많습니다. 감정보다는 이성을 통해 상황을 판단하는 편이며, 쉽게 흔들리지 않는 단단함을 가지고 있습니다.",
+    special: "하나님은 화려하게 드러나는 사람뿐 아니라 묵묵히 자신의 자리를 지키는 사람도 귀하게 사용하십니다.",
+    verse: '"지극히 작은 것에 충성된 자는 큰 것에도 충성되고"',
+    verse_ref: "누가복음 16:10",
+  },
+  B: {
+    id: "natural",
+    name_kr: "내추럴",
+    name_en: "Natural",
+    badge: "Single Origin · Natural",
+    emoji: "🌸",
+    gradient: "linear-gradient(155deg, #c4713f 0%, #7a2e10 100%)",
+    traits: ["표현력", "따뜻함", "열정", "활력"],
+    short: "당신은 내추럴 성향이에요.",
+    desc: "당신은 밝고 따뜻한 에너지를 가진 사람입니다. 사람들과 함께하는 것을 좋아하며 자신의 감정과 생각을 자연스럽게 표현하는 편입니다. 당신의 웃음과 따뜻한 말 한마디는 누군가에게 큰 힘이 되기도 합니다.",
+    special: "하나님은 당신의 밝은 에너지와 따뜻한 마음을 통해 많은 사람들에게 기쁨을 전하실 수 있습니다.",
+    verse: '"항상 기뻐하라 쉬지 말고 기도하라 범사에 감사하라"',
+    verse_ref: "데살로니가전서 5:16–18",
+  },
+  C: {
+    id: "anaerobic",
+    name_kr: "언에어로빅",
+    name_en: "Anaerobic",
+    badge: "Single Origin · Anaerobic",
+    emoji: "🌑",
+    gradient: "linear-gradient(155deg, #3a5070 0%, #162035 100%)",
+    traits: ["깊은 사고", "신중함", "통찰력", "내면의 풍요"],
+    short: "당신은 언에어로빅 성향이에요.",
+    desc: "당신은 생각이 깊고 내면이 풍부한 사람입니다. 겉으로는 조용해 보일 수 있지만 누구보다 많은 고민과 생각을 품고 있습니다. 사람들이 쉽게 보지 못하는 부분까지 바라보며, 혼자 묵상하고 정리하는 시간을 소중히 여깁니다.",
+    special: "하나님은 다른 사람들이 알지 못하는 당신의 중심과 깊은 마음까지 알고 계십니다.",
+    verse: '"사람은 외모를 보거니와 여호와는 중심을 보시느니라"',
+    verse_ref: "사무엘상 16:7",
+  },
+  AB: {
+    id: "latte",
+    name_kr: "라떼 타입",
+    name_en: "Latte",
+    badge: "Blend · Washed + Natural",
+    emoji: "☕",
+    gradient: "linear-gradient(155deg, #6a8f6e 0%, #8a5e2a 100%)",
+    traits: ["친근함", "믿음직함", "공감 능력", "연결자"],
+    short: "당신은 따뜻한 라떼 같은 사람이에요.",
+    desc: "당신은 워시드의 안정감과 내추럴의 따뜻함을 함께 가지고 있습니다. 사람들에게 신뢰를 주면서도 편하게 다가갈 수 있는 매력이 있습니다. 공동체 안에서 분위기를 밝게 만들기도 하고, 필요할 때는 책임감 있게 중심을 잡아주기도 합니다.",
+    special: "하나님은 당신을 통해 공동체가 서로를 더 사랑하고 연결되도록 하실 수 있습니다.",
+    verse: "",
+    verse_ref: "",
+  },
+  BC: {
+    id: "floral",
+    name_kr: "플로럴 타입",
+    name_en: "Floral",
+    badge: "Blend · Natural + Anaerobic",
+    emoji: "🌺",
+    gradient: "linear-gradient(155deg, #b4704a 0%, #3a3a6a 100%)",
+    traits: ["감성", "공감력", "섬세함", "깊은 이해"],
+    short: "당신은 향기로운 꽃 같은 사람이에요.",
+    desc: "당신은 내추럴의 감성과 언에어로빅의 깊이를 함께 가지고 있습니다. 밝고 따뜻한 모습 뒤에 깊은 생각과 진심을 품고 있습니다. 사람들의 마음을 잘 이해하고 공감하며, 때로는 누구보다 섬세하게 주변을 살피는 사람입니다.",
+    special: "하나님은 당신의 섬세함을 통해 상처받은 사람들을 위로하실 수 있습니다.",
+    verse: "",
+    verse_ref: "",
+  },
+  AC: {
+    id: "darkchoco",
+    name_kr: "다크초콜릿 타입",
+    name_en: "Dark Chocolate",
+    badge: "Blend · Washed + Anaerobic",
+    emoji: "🍫",
+    gradient: "linear-gradient(155deg, #3a5e44 0%, #151820 100%)",
+    traits: ["믿음직함", "신중함", "깊은 가치관", "방향 제시"],
+    short: "당신은 깊고 진한 다크초콜릿 같은 사람이에요.",
+    desc: "당신은 워시드의 안정감과 언에어로빅의 깊이를 함께 가지고 있습니다. 쉽게 흔들리지 않으며 중요한 순간에 신중한 판단을 내립니다. 조용해 보일 수 있지만, 내면에는 깊은 생각과 단단한 가치관이 자리잡고 있습니다.",
+    special: "하나님은 당신을 통해 공동체가 올바른 방향을 바라보도록 도우실 수 있습니다.",
+    verse: "",
+    verse_ref: "",
+  },
+};
+
+const SCORE_LABEL = { A: "워시드", B: "내추럴", C: "언에어로빅" };
+const SCORE_COLOR = {
+  A: { bg: "#d9edd6", text: "#3d6e4a" },
+  B: { bg: "#f5ddd0", text: "#c4713f" },
+  C: { bg: "#d3dde8", text: "#3a5070" },
+};
+
+let answers = new Array(QUESTIONS.length).fill(null);
+
+function startTest() {
+  document.getElementById('screen-intro').classList.remove('active');
+  document.getElementById('screen-test').classList.add('active');
+  renderQuestions();
+  window.scrollTo(0, 0);
+}
+
+function renderQuestions() {
+  const body = document.getElementById('test-body');
+  body.innerHTML = '';
+  QUESTIONS.forEach((q, qi) => {
+    const card = document.createElement('div');
+    card.className = 'q-card fade-in';
+    card.id = `q-${qi}`;
+    card.style.animationDelay = `${qi * 0.04}s`;
+    card.innerHTML = `
+      <div class="q-number">Question ${String(qi+1).padStart(2,'0')}</div>
+      <div class="q-text">${q.q}</div>
+      <div class="options">
+        ${q.opts.map((o, oi) => `
+          <button class="option-btn" onclick="selectAnswer(${qi}, '${o.type}', this)">
+            <div class="opt-dot dot-${o.label.toLowerCase()}">${o.label}</div>
+            <div class="opt-text">${o.text}</div>
+          </button>
+        `).join('')}
+      </div>
+    `;
+    body.appendChild(card);
+  });
+  updateProgress();
+}
+
+function selectAnswer(qi, type, btn) {
+  // 같은 질문의 버튼들 선택 해제
+  const card = document.getElementById(`q-${qi}`);
+  card.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  card.classList.add('answered');
+  answers[qi] = type;
+  updateProgress();
+}
+
+function updateProgress() {
+  const done = answers.filter(a => a !== null).length;
+  const pct = (done / QUESTIONS.length) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `${done} / ${QUESTIONS.length}`;
+
+  const btn = document.getElementById('btn-complete');
+  const hint = document.getElementById('submit-hint');
+  const remaining = QUESTIONS.length - done;
+  if (done === QUESTIONS.length) {
+    btn.classList.add('ready');
+    hint.textContent = '✦ 모두 완료! 결과를 확인해보세요';
+  } else {
+    btn.classList.remove('ready');
+    hint.textContent = `${remaining}개 문항이 남았어요`;
+  }
+}
+
+function getResult() {
+  const count = { A: 0, B: 0, C: 0 };
+  answers.forEach(a => { if(a) count[a]++; });
+
+  const max = Math.max(count.A, count.B, count.C);
+  const winners = Object.keys(count).filter(k => count[k] === max);
+
+  if (winners.length === 1) return { key: winners[0], count };
+
+  // 동점 처리
+  const combined = winners.sort().join('');
+  if (combined === 'AB') return { key: 'AB', count };
+  if (combined === 'BC') return { key: 'BC', count };
+  if (combined === 'AC') return { key: 'AC', count };
+  // 3개 동점 → A 우선
+  return { key: 'A', count };
+}
+
+function showResult() {
+  if (answers.some(a => a === null)) return;
+
+  const { key, count } = getResult();
+  const r = RESULTS[key];
+
+  const screen = document.getElementById('screen-result');
+  screen.innerHTML = `
+    <div class="result-hero fade-in" style="background: ${r.gradient}">
+      <div class="result-type-badge">${r.badge}</div>
+      <div class="result-emoji">${r.emoji}</div>
+      <div class="result-name-kr">${r.name_kr}</div>
+      <div class="result-name-en">${r.name_en}</div>
+      <div class="result-traits">
+        ${r.traits.map(t => `<span class="result-trait">${t}</span>`).join('')}
+      </div>
+      ${r.verse ? `
+      <div class="result-verse-box">
+        ${r.verse}
+        ${r.verse_ref ? `<span class="result-verse-ref">— ${r.verse_ref}</span>` : ''}
+      </div>` : ''}
+    </div>
+
+    <div class="result-body">
+      <div class="result-section fade-in stagger-1">
+        <h3>✦ 나의 성향</h3>
+        <p><strong>${r.short}</strong><br><br>${r.desc}</p>
+      </div>
+
+      <div class="result-section special fade-in stagger-2">
+        <h3>✦ 하나님이 주신 특별함</h3>
+        <p>${r.special}</p>
+      </div>
+
+      <div class="result-section fade-in stagger-3">
+        <h3>✦ 나의 점수</h3>
+        <div class="score-row">
+          ${['A','B','C'].map(k => `
+            <div class="score-chip" style="background:${SCORE_COLOR[k].bg}">
+              <span class="sc-val" style="color:${SCORE_COLOR[k].text}">${count[k]}</span>
+              <span style="font-size:0.7rem;color:${SCORE_COLOR[k].text}">${SCORE_LABEL[k]}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <button class="btn-retry fade-in stagger-4" onclick="resetTest()">다시 테스트하기</button>
+    </div>
+  `;
+
+  document.getElementById('screen-test').classList.remove('active');
+  screen.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function resetTest() {
+  answers = new Array(QUESTIONS.length).fill(null);
+  document.getElementById('screen-result').classList.remove('active');
+  document.getElementById('screen-intro').classList.add('active');
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
